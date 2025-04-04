@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>サウナ室における心拍数の目安計算機</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    label, input {
+      font-size: 16px;
+      margin: 5px;
+    }
+    .result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>サウナ室における心拍数の目安計算機</h1>
+  <p>この計算機は、年齢と体調からサウナ室における心拍数の目安を計算します。</p>
+  
+  <form id="calcForm">
+    <div>
+      <label for="age">年齢：</label>
+      <input type="number" id="age" name="age" placeholder="例: 30" required>
+    </div>
+    <div>
+      <p>体調：</p>
+      <input type="radio" id="tatsukigimi" name="condition" value="0.7">
+      <label for="tatsukigimi">お疲れ気味</label>
+      <input type="radio" id="normal" name="condition" value="0.74" checked>
+      <label for="normal">普通</label>
+      <input type="radio" id="genki" name="condition" value="0.78">
+      <label for="genki">元気</label>
+    </div>
+    <div>
+      <button type="button" onclick="calculate()">計算する</button>
+    </div>
+  </form>
+  
+  <div class="result" id="result"></div>
+
+  <script>
+    function calculate() {
+      // 入力された年齢を取得
+      var age = parseFloat(document.getElementById("age").value);
+      if (isNaN(age) || age <= 0) {
+        document.getElementById("result").textContent = "正しい年齢を入力してください。";
+        return;
+      }
+      
+      // 選択された体調の値を取得
+      var conditions = document.getElementsByName("condition");
+      var factor;
+      for (var i = 0; i < conditions.length; i++) {
+        if (conditions[i].checked) {
+          factor = parseFloat(conditions[i].value);
+          break;
+        }
+      }
+      
+      // 心拍数の目安を計算
+      var heartRate = (208 - 0.8 * age) * factor;
+      heartRate = Math.round(heartRate * 10) / 10;  // 小数点1位で丸め
+      
+      // 結果を表示
+      document.getElementById("result").textContent = "サウナ室における心拍数の目安は " + heartRate + " です。";
+    }
+  </script>
+</body>
+</html>
