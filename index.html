@@ -2,46 +2,251 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>サウナ室における心拍数の目安計算機</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
+    * { box-sizing: border-box; }
+
     body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
+      min-height: 100vh;
+      margin: 0;
+      font-family: "Noto Sans JP", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #555555;
+      background:
+        radial-gradient(circle at top right, rgba(42, 194, 198, 0.16), transparent 34%),
+        linear-gradient(180deg, #fff7f2 0%, #F5F5F5 42%, #F5F5F5 100%);
+      background-attachment: fixed;
+      letter-spacing: 0.06em;
     }
-    label, input {
+
+    .app-shell {
+      width: min(100%, 640px);
+      margin: 0 auto;
+      padding: 40px 20px 56px;
+      animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .calculator-card {
+      padding: 44px 36px;
+      background: #FFFFFF;
+      border-radius: 40px;
+      box-shadow: 0 18px 48px rgba(17, 17, 17, 0.08);
+    }
+
+    .eyebrow {
+      margin: 0 0 12px;
+      color: #FF792D;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      color: #111111;
+      font-size: 1.75rem;
+      font-weight: 700;
+      line-height: 1.45;
+      letter-spacing: 0.04em;
+    }
+
+    .lede {
+      margin: 0 0 32px;
+      color: #555555;
+      font-size: 14px;
+      line-height: 1.9;
+    }
+
+    .form-grid {
+      display: grid;
+      gap: 24px;
+    }
+
+    .field-label {
+      display: block;
+      margin: 0 0 10px;
+      color: #555555;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+
+    input[type="number"] {
+      display: block;
+      width: 100%;
+      min-height: 52px;
+      margin: 0;
+      padding: 12px 16px;
+      font: inherit;
       font-size: 16px;
-      margin: 5px;
+      color: #111111;
+      background: #FFFFFF;
+      border: 1px solid #E4E4E4;
+      border-radius: 16px;
+      outline: none;
+      letter-spacing: 0.04em;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      -webkit-appearance: none;
+      appearance: none;
     }
+
+    input[type="number"]:focus {
+      border-color: #FF792D;
+      box-shadow: 0 0 0 4px rgba(255, 121, 45, 0.14);
+    }
+
+    .chips {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .chips input[type="radio"] {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: 0;
+      padding: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .chips label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 10px 6px;
+      color: #555555;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      background: #FFFFFF;
+      border: 1px solid #E4E4E4;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .chips label:hover {
+      border-color: #FF792D;
+      color: #FF792D;
+    }
+
+    .chips input[type="radio"]:checked + label {
+      color: #FFFFFF;
+      background: linear-gradient(0deg, #F67D42 0%, #FF9D67 100%);
+      border-color: transparent;
+      box-shadow: 0 8px 18px rgba(246, 125, 66, 0.26);
+    }
+
+    .chips input[type="radio"]:focus-visible + label {
+      box-shadow: 0 0 0 4px rgba(255, 121, 45, 0.18);
+    }
+
+    button {
+      width: 100%;
+      min-height: 56px;
+      margin-top: 6px;
+      padding: 14px 18px;
+      color: #FFFFFF;
+      font: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      background: linear-gradient(0deg, #F67D42 0%, #FF9D67 100%);
+      border: 0;
+      border-radius: 999px;
+      box-shadow: 0 10px 22px rgba(246, 125, 66, 0.28);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 26px rgba(246, 125, 66, 0.34);
+    }
+
+    button:active {
+      transform: translateY(0);
+      box-shadow: 0 8px 18px rgba(246, 125, 66, 0.24);
+    }
+
     .result {
-      margin-top: 20px;
-      font-weight: bold;
+      margin-top: 28px;
+      padding: 22px 24px;
+      color: #111111;
+      background: #FFF4ED;
+      border-radius: 24px;
+      font-size: 17px;
+      font-weight: 700;
+      line-height: 1.7;
+    }
+
+    .result:empty {
+      display: none;
+    }
+
+    @media (max-width: 480px) {
+      .app-shell {
+        padding: 28px 14px 40px;
+      }
+      .calculator-card {
+        padding: 32px 22px;
+        border-radius: 32px;
+      }
+      h1 {
+        font-size: 1.45rem;
+        span {
+          font-size: 65%;
+        }
+      }
+      .form-grid {
+        gap: 20px;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>サウナ室における心拍数の目安計算機</h1>
-  <p>この計算機は、年齢と体調からサウナ室における心拍数の目安を計算します。</p>
-  
-  <form id="calcForm">
-    <div>
-      <label for="age">年齢：</label>
-      <input type="number" id="age" name="age" placeholder="例: 30" required>
-    </div>
-    <div>
-      <p>体調：</p>
-      <input type="radio" id="tatsukigimi" name="condition" value="0.7">
-      <label for="tatsukigimi">お疲れ気味</label>
-      <input type="radio" id="normal" name="condition" value="0.74" checked>
-      <label for="normal">普通</label>
-      <input type="radio" id="genki" name="condition" value="0.78">
-      <label for="genki">元気</label>
-    </div>
-    <div>
-      <button type="button" onclick="calculate()">計算する</button>
-    </div>
-  </form>
-  
-  <div class="result" id="result"></div>
+  <main class="app-shell">
+    <section class="calculator-card">
+      <p class="eyebrow">HEART RATE CALCULATOR</p>
+      <h1>サウナ室における<br>心拍数の目安計算機<span> : v1.0</span></h1>
+      <p class="lede">年齢と体調から、サウナ室での目安となる心拍数を算出します。</p>
+
+      <form id="calcForm" class="form-grid">
+        <div class="field">
+          <label class="field-label" for="age">年齢</label>
+          <input type="number" id="age" name="age" placeholder="例: 30" inputmode="numeric" required>
+        </div>
+
+        <div class="field">
+          <span class="field-label">体調</span>
+          <div class="chips">
+            <input type="radio" id="tatsukigimi" name="condition" value="0.7">
+            <label for="tatsukigimi">お疲れ気味</label>
+            <input type="radio" id="normal" name="condition" value="0.74" checked>
+            <label for="normal">普通</label>
+            <input type="radio" id="genki" name="condition" value="0.78">
+            <label for="genki">元気</label>
+          </div>
+        </div>
+
+        <button type="button" onclick="calculate()">計算する</button>
+      </form>
+
+      <div class="result" id="result"></div>
+    </section>
+  </main>
 
   <script>
     function calculate() {
@@ -51,7 +256,7 @@
         document.getElementById("result").textContent = "正しい年齢を入力してください。";
         return;
       }
-      
+
       // 選択された体調の値を取得
       var conditions = document.getElementsByName("condition");
       var factor;
@@ -61,11 +266,11 @@
           break;
         }
       }
-      
+
       // 心拍数の目安を計算
       var heartRate = (208 - 0.8 * age) * factor;
       heartRate = Math.round(heartRate * 10) / 10;  // 小数点1位で丸め
-      
+
       // 結果を表示
       document.getElementById("result").textContent = "サウナ室における心拍数の目安は " + heartRate + " です。";
     }
